@@ -1,19 +1,17 @@
 import com.codeborne.selenide.Configuration;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.Selectors.*;
+import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.executeJavaScript;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.Condition.text;
+
 
 public class DemoQaTest {
 
@@ -30,14 +28,14 @@ public class DemoQaTest {
         $("#firstName").setValue("Alexey");
         $("#lastName").setValue("Merkulov");
         $("#userEmail").setValue("mail@mail.ru");
-        $("[for='gender-radio-1']").click();
+        $("#genterWrapper").$(byText("Male")).click();
         $("#userNumber").setValue("9999999999");
         $("#dateOfBirthInput").click();
         $(".react-datepicker__month-select [value='2']").click();
         $(".react-datepicker__year-select [value='1993']").click();
-        $(".react-datepicker__month [aria-label='Choose Tuesday, March 30th, 1993']").click();
+        $(".react-datepicker__day--030").click();
         $("#subjectsInput").setValue("English").sendKeys(Keys.ENTER);
-        $("[for='hobbies-checkbox-1']").click();
+        $("#hobbiesWrapper").$(byText("Sports")).click();
         $("#uploadPicture").uploadFile(new File("src/test/resources/selenide.jpg"));
         $("#currentAddress").setValue("Bay Area,100");
         $("#state").click();
@@ -45,22 +43,16 @@ public class DemoQaTest {
         $("#city").click();
         $(byText("Agra")).click();
         $("#submit").click();
-        List<WebElement> tableRows = new ArrayList<>($$("tbody tr"));
-        Map<String, String> tableContent =  tableRows
-                .stream()
-                .collect(Collectors.toMap(
-                        key -> key.findElements(By.cssSelector("td")).get(0).getText(),
-                        value -> value.findElements(By.cssSelector("td")).get(1).getText()));
 
-        Assertions.assertEquals("Alexey Merkulov", tableContent.get("Student Name"));
-        Assertions.assertEquals("mail@mail.ru", tableContent.get("Student Email"));
-        Assertions.assertEquals("Male", tableContent.get("Gender"));
-        Assertions.assertEquals("9999999999", tableContent.get("Mobile"));
-        Assertions.assertEquals("30 March,1993", tableContent.get("Date of Birth"));
-        Assertions.assertEquals("English", tableContent.get("Subjects"));
-        Assertions.assertEquals("Sports", tableContent.get("Hobbies"));
-        Assertions.assertEquals("selenide.jpg", tableContent.get("Picture"));
-        Assertions.assertEquals("Bay Area,100", tableContent.get("Address"));
-        Assertions.assertEquals("Uttar Pradesh Agra", tableContent.get("State and City"));
+        $x("//div[@class='table-responsive']//td[text()='Student Name']/following-sibling::td").shouldHave(text("Alexey Merkulov"));
+        $x("//div[@class='table-responsive']//td[text()='Student Email']/following-sibling::td").shouldHave(text("mail@mail.ru"));
+        $x("//div[@class='table-responsive']//td[text()='Gender']/following-sibling::td").shouldHave(text("Male"));
+        $x("//div[@class='table-responsive']//td[text()='Mobile']/following-sibling::td").shouldHave(text("9999999999"));
+        $x("//div[@class='table-responsive']//td[text()='Date of Birth']/following-sibling::td").shouldHave(text("30 March,1993"));
+        $x("//div[@class='table-responsive']//td[text()='Subjects']/following-sibling::td").shouldHave(text("English"));
+        $x("//div[@class='table-responsive']//td[text()='Hobbies']/following-sibling::td").shouldHave(text("Sports"));
+        $x("//div[@class='table-responsive']//td[text()='Picture']/following-sibling::td").shouldHave(text("selenide.jpg"));
+        $x("//div[@class='table-responsive']//td[text()='Address']/following-sibling::td").shouldHave(text("Bay Area,100"));
+        $x("//div[@class='table-responsive']//td[text()='State and City']/following-sibling::td").shouldHave(text("Uttar Pradesh Agra"));
     }
 }
